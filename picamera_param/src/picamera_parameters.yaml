@@ -1,0 +1,174 @@
+picamera_parameters:
+  sharpness:
+    type: double
+    description: "Sets image sharpness.;"
+    default_value: 1.0
+    validation: {
+        bounds<>: [0.0, 1.0]
+    }
+  contrast:
+    type: double
+    description: "Sets image contrast.;"
+    default_value: 1.0
+    validation: {
+        bounds<>: [0.0, 1.0]
+    }
+  brightness:
+    type: double
+    description: "Specifies the image brightness, added as an offset to all pixels in the output image. (For many use cases, prefer ev.);"
+    default_value: 0.0
+    validation: {
+        bounds<>: [-1.0, 1.0]
+    }
+  saturation:
+    type: double
+    description: "Specifies the image colour saturation.;"
+    default_value: 1.0
+    validation: {
+        bounds<>: [0.0, 1.0]
+    }
+  ev:
+    type: double
+    description: "Specifies the exposure value (EV) compensation of the image in stops.;"
+    default_value: 0.0
+    validation: {
+        bounds<>: [-10.0, 10.0]
+    }
+  shutter:
+    type: int
+    description: "Specifies the exposure time, using the shutter, in microseconds. Gain can still vary when you use this option. If the camera runs at a framerate so fast it does not allow for the specified exposure time (for instance, a framerate of 1fps and an exposure time of 10000 microseconds), the sensor will use the maximum exposure time allowed by the framerate.;"
+    default_value: 1000
+    validation: {
+        bounds<>: [0, 10000]
+    }
+  metering:
+    type: string
+    description: "Sets the metering mode of the Automatic Exposure/Gain Control (AEC/AGC) algorithm.;"
+    default_value: "centre"
+    validation: {
+      one_of<>: [["centre", "spot", "average", "custom"]]
+    }
+  exposure:
+    type: string
+    description: "Sets the exposure profile. Changing the exposure profile should not affect the image exposure. Instead, different modes adjust gain settings to achieve the same net result.:"
+    default_value: "normal"
+    validation: {
+      one_of<>: [["sport", "normal", "long"]]
+    }
+  awb:
+    type: string
+    description: "Sets the Automatic White Balance (AWB) mode.:"
+    default_value: "auto"
+    validation: {
+      one_of<>: [["auto", "incandescent", "tungsten", "fluorescent", "indoor", "daylight", "cloudy", "custom"]]
+    }
+  denoise:
+    type: string
+    description: "Sets the denoising mode.;"
+    default_value: "auto"
+    validation: {
+      one_of<>: [["auto", "off", "cdn_off", "cdn_fast", "cdn_hq"]]
+    }
+  # autofocus_mode:
+  #   type: string
+  #   description: "Specifies the autofocus mode.:"
+  #   default_value: "default"
+  #   validation: {
+  #     one_of<>: [["default", "manual", "auto", "continuous"]]
+  #   }
+  # autofocus_range:
+  #   type: string
+  #   description: "Specifies the autofocus range.:"
+  #   default_value: "normal"
+  #   validation: {
+  #     one_of<>: [["normal", "macro", "full"]]
+  #   }
+  # autofocus_speed:
+  #   type: string
+  #   description: "Specifies the autofocus speed.:"
+  #   default_value: "normal"
+  #   validation: {
+  #     one_of<>: [["normal", "fast"]]
+  #   }
+  autofocus_range:
+    x:
+      type: double
+      description: "Specifies the autofocus window within the full field of the sensor (x);"
+      default_value: 0.0
+      validation: {
+          bounds<>: [0.0, 1.0]
+      }
+    y:
+      type: double
+      description: "Specifies the autofocus window within the full field of the sensor (y);"
+      default_value: 0.0
+      validation: {
+          bounds<>: [0.0, 1.0]
+      }
+    width:
+      type: double
+      description: "Specifies the autofocus window within the full field of the sensor (width);"
+      default_value: 1.0
+      validation: {
+          bounds<>: [0.0, 1.0]
+      }
+    height:
+      type: double
+      description: "Specifies the autofocus window within the full field of the sensor (height);"
+      default_value: 1.0
+      validation: {
+          bounds<>: [0.0, 1.0]
+      }
+  # lens_position:
+  #   type: double
+  #   description: "Moves the lens to a fixed focal distance, normally given in dioptres (units of 1 / distance in metres)."
+  #   default_value: 0.0
+  #   validation: {
+  #       bounds<>: [0.0, 100.0]
+  #   }
+  hdr:
+    type: bool
+    description: "Enables or disables High Dynamic Range (HDR) mode."
+    default_value: false
+  id:
+    type: int
+    description: "Specifies the camera ID."
+    default_value: 0
+    validation: {
+        gt_eq<>: [ 0 ]
+    }
+  framerate:
+    type: int
+    description: "Specifies the framerate of the camera."
+    default_value: 30
+    validation: {
+        bounds<>: [1, 120]
+    }
+  video_width:
+    type: int
+    description: "Specifies the width of the video stream."
+    default_value: 1920
+    validation: {
+        bounds<>: [1, 1920]
+    }
+  video_height:
+    type: int
+    description: "Specifies the height of the video stream."
+    default_value: 1080
+    validation: {
+        bounds<>: [1, 1080]
+    }
+  camera_width:
+    type: int
+    description: "Specifies the width of the camera stream. (check the available width for the camera)"
+    default_value: 4056
+    validation: {
+        bounds<>: [1, 4056]
+    }
+  camera_height:
+    type: int
+    description: "Specifies the height of the camera stream. (check the available height for the camera)"
+    default_value: 3040
+    validation: {
+        bounds<>: [1, 3040]
+    }

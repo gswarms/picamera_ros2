@@ -7,31 +7,59 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
 {
     this->camera_ = new lccv::PiCamera();
 
-    this->declare_parameter("video_width", 1280);
-    this->declare_parameter("video_height", 720);
-    this->declare_parameter("framerate", 30);
-    this->declare_parameter("hdr", true);
-    this->declare_parameter("verbose", false);
-    this->declare_parameter("shutter", 100.0);
+    this->param_listener_ = std::make_shared<picamera_parameters::ParamListener>(
+        this->get_node_parameters_interface());
+    this->params_ = param_listener_->get_params();
 
-    this->get_parameter("video_width", this->video_width_);
-    this->get_parameter("video_height", this->video_height_);
-    this->get_parameter("framerate", this->framerate_);
-    this->get_parameter("hdr", this->hdr_);
-    this->get_parameter("verbose", this->verbose_);
-    this->get_parameter("shutter", this->shutter_);
+    std::map<std::string, int> exposure_map =
+		{ { "normal", libcamera::controls::ExposureNormal },
+        { "sport", libcamera::controls::ExposureShort },
+        { "long", libcamera::controls::ExposureLong },
+        { "custom", libcamera::controls::ExposureCustom } };
+    std::map<std::string, int> awb_map =
+        { { "auto", libcamera::controls::AwbAuto },
+        { "incandescent", libcamera::controls::AwbIncandescent },
+        { "tungsten", libcamera::controls::AwbTungsten },
+        { "fluorescent", libcamera::controls::AwbFluorescent },
+        { "indoor", libcamera::controls::AwbIndoor },
+        { "daylight", libcamera::controls::AwbDaylight },
+        { "cloudy", libcamera::controls::AwbCloudy },
+        { "custom", libcamera::controls::AwbCustom } };
+    std::map<std::string, int> metering_table =
+		{ { "centre", libcamera::controls::MeteringCentreWeighted },
+        { "spot", libcamera::controls::MeteringSpot },
+        { "average", libcamera::controls::MeteringMatrix },
+        { "matrix", libcamera::controls::MeteringMatrix },
+        { "custom", libcamera::controls::MeteringCustom } };
 
-    this->camera_->options->video_width = this->video_width_;
-    this->camera_->options->video_height = this->video_height_;
-    this->camera_->options->framerate = this->framerate_;
-    this->camera_->options->verbose = this->verbose_;
-    this->camera_->options->shutter = this->shutter_;
+    this->camera_->options->video_width = this->params_.video_width;
+    this->camera_->options->video_height = this->params_.video_height;
+    this->camera_->options->photo_width = this->params_.camera_width;
+    this->camera_->options->photo_height = this->params_.camera_height;
+    this->camera_->options->camera = this->params_.id;
+    this->camera_->options->shutter = this->params_.shutter;
+    this->camera_->options->denoise = this->params_.denoise;
+    this->camera_->options->brightness = this->params_.brightness;
+    this->camera_->options->saturation = this->params_.saturation;
+    this->camera_->options->ev = this->params_.ev;
+    this->camera_->options->sharpness = this->params_.sharpness;
+    this->camera_->options->contrast = this->params_.contrast;
+    this->camera_->options->framerate = this->params_.framerate;
+    this->camera_->options->roi_x = this->params_.autofocus_range.x;
+    this->camera_->options->roi_y = this->params_.autofocus_range.y;
+    this->camera_->options->roi_width = this->params_.autofocus_range.width;
+    this->camera_->options->roi_height = this->params_.autofocus_range.height;
+    this->camera_->options->setMetering(static_cast<Metering_Modes>(metering_table[this->params_.metering]));
+    this->camera_->options->setExposureMode(static_cast<Exposure_Modes>(exposure_map[this->params_.exposure]));
+    this->camera_->options->setWhiteBalance(static_cast<WhiteBalance_Modes>(awb_map[this->params_.awb]));
 
-    this->camera_->hdrOpen(this->hdr_);
+    this->camera_->options->framerate = (float)this->params_.framerate;
+
+    this->camera_->hdrOpen(this->params_.hdr);
     this->camera_->startVideo();
 
     this->image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("image_raw", 10);
-    this->timer_ = this->create_wall_timer(std::chrono::milliseconds(1000 / this->framerate_), std::bind(&PiCameraROS::timerCallback, this));
+    this->timer_ = this->create_wall_timer(std::chrono::milliseconds(1000 / this->params_.framerate), std::bind(&PiCameraROS::timerCallback, this));
 }
 
 PiCameraROS::~PiCameraROS()
