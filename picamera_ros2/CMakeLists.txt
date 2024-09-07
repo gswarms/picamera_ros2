@@ -10,11 +10,14 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake_auto REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(vision_msgs REQUIRED)
 ament_auto_find_build_dependencies()
 
 # libcamera
 pkg_check_modules(LIBCAMERA REQUIRED libcamera)
 include_directories(include ${LIBCAMERA_INCLUDE_DIRS})
+include_directories("/utils_ws/install/")
 
 # picamera_pub ======================================
 set(TARGET picamera_pub)
@@ -25,6 +28,10 @@ rclcpp_components_register_nodes(${TARGET} "picamera_ros::PiCameraROS")
 
 # picamera_pub_exec ======================================
 ament_auto_add_executable(${TARGET}_exec src/${TARGET}.cpp)
+ament_target_dependencies(${TARGET}_exec 
+    cv_bridge
+    vision_msgs
+)
 # target_link_libraries(${TARGET}_exec -llccv)
 # ===================================================================
 
