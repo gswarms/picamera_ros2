@@ -147,14 +147,14 @@ picamera_parameters:
   video_width:
     type: int
     description: "Specifies the width of the video stream."
-    default_value: 1920
+    default_value: 640
     validation: {
         bounds<>: [1, 1920]
     }
   video_height:
     type: int
     description: "Specifies the height of the video stream."
-    default_value: 1080
+    default_value: 480
     validation: {
         bounds<>: [1, 1080]
     }

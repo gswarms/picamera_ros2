@@ -58,7 +58,7 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
     this->camera_->hdrOpen(this->params_.hdr);
     this->camera_->startVideo();
 
-    this->image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("image_raw", 10);
+    this->image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 10);
     this->timer_ = this->create_wall_timer(std::chrono::milliseconds(1000 / this->params_.framerate), std::bind(&PiCameraROS::timerCallback, this));
 }
 
