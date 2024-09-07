@@ -17,7 +17,7 @@ ament_auto_find_build_dependencies()
 # libcamera
 pkg_check_modules(LIBCAMERA REQUIRED libcamera)
 include_directories(include ${LIBCAMERA_INCLUDE_DIRS})
-include_directories("/utils_ws/install/")
+# include_directories("/utils_ws/install/")
 
 # picamera_pub ======================================
 set(TARGET picamera_pub)
