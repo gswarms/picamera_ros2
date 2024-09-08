@@ -45,7 +45,7 @@ def generate_launch_description():
         ),
     ]
 
-    # current_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
+    current_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
 
     container = ComposableNodeContainer(
         name='picamera_ros2_container',
@@ -53,7 +53,7 @@ def generate_launch_description():
         package='rclcpp_components',
         executable='component_container',
         composable_node_descriptions=[
-            # Camera node
+            ## Camera node
             ComposableNode(
                 package='picamera_ros2',
                 plugin='picamera_ros::PiCameraROS',
@@ -64,21 +64,21 @@ def generate_launch_description():
                     'framerate': LaunchConfiguration('framerate'),
                 }]
             ),
-            # Rosbag2 recorder node to record camera topic only
-            # ComposableNode(
-            #     package='rosbag2_transport',
-            #     plugin='rosbag2_transport::Recorder',
-            #     name='rosbag2_recorder',
-            #     parameters=[{
-            #         'ros__parameters': {
-            #             'record': {
-            #                 'topics': [LaunchConfiguration('camera_topic')],
-            #                 'storage_id': LaunchConfiguration('storage_id'),
-            #                 'uri': f"/bags/{current_time}",
-            #             },
-            #         }
-            #     }]
-            # ),
+            ## Rosbag2 recorder node to record camera topic only
+            ComposableNode(
+                package='rosbag2_transport',
+                plugin='rosbag2_transport::Recorder',
+                name='rosbag2_recorder',
+                parameters=[{
+                    'ros__parameters': {
+                        'record': {
+                            'topics': [LaunchConfiguration('camera_topic')],
+                            'storage_id': LaunchConfiguration('storage_id'),
+                            'uri': f"/bags/cam_{current_time}",
+                        },
+                    }
+                }]
+            ),
         ],
         output='screen',
     )
