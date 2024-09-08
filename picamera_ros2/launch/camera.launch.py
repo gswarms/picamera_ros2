@@ -62,8 +62,10 @@ def generate_launch_description():
                     'video_width': LaunchConfiguration('video_width'),
                     'video_height': LaunchConfiguration('video_height'),
                     'framerate': LaunchConfiguration('framerate'),
-                }]
+                }],
+                extra_arguments=[{'use_intra_process_comms': True}],
             ),
+            
             ## Rosbag2 recorder node to record camera topic only
             ComposableNode(
                 package='rosbag2_transport',
@@ -77,7 +79,8 @@ def generate_launch_description():
                             'uri': f"/bags/cam_{current_time}",
                         },
                     }
-                }]
+                }],
+                extra_arguments=[{'use_intra_process_comms': True}],
             ),
         ],
         output='screen',
