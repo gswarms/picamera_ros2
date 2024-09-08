@@ -42,9 +42,6 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
 PiCameraROS::~PiCameraROS()
 {
     this->camera_->stopVideo();
-    if (this->verbose_){
-        cv::destroyAllWindows();
-    }
 }
 
 void PiCameraROS::timerCallback()
@@ -77,13 +74,6 @@ void PiCameraROS::timerCallback()
     image_msg.header.frame_id = "camera";
     image_msg.header.stamp = timestamp;  
     image_pub_->publish(image_msg);
-
-    // display image
-    if (this->verbose_)
-    {
-        cv::imshow("Image", cv_image.image);
-        cv::waitKey(1);
-    }
 }
 
 }
