@@ -35,7 +35,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             "bag_output_directory",
-            default_value="/path/to/rosbags",
+            default_value="/bags/camera_" + time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime()),
             description="Path to store the rosbag."
         ),
         DeclareLaunchArgument(
@@ -44,8 +44,6 @@ def generate_launch_description():
             description="Topic to record."
         ),
     ]
-
-    current_time = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
 
     container = ComposableNodeContainer(
         name='picamera_ros2_container',
@@ -74,9 +72,12 @@ def generate_launch_description():
                 parameters=[{
                     'ros__parameters': {
                         'record': {
-                            'topics': [LaunchConfiguration('camera_topic')],
+                            'all_topics': [LaunchConfiguration('true')],
+                        },
+                        'storage': {
                             'storage_id': LaunchConfiguration('storage_id'),
-                            'uri': f"/bags/cam_{current_time}",
+                            'uri': LaunchConfiguration('bag_output_directory'),
+                            'max_cache_size': 0,
                         },
                     }
                 }],
