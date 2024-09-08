@@ -37,6 +37,7 @@ ament_target_dependencies(${TARGET}_exec
 
 install(DIRECTORY
   launch
+  config
   DESTINATION share/${PROJECT_NAME}
 )
 
