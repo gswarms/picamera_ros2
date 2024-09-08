@@ -3,13 +3,12 @@
 
 #include "lccv.hpp"
 #include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
-// #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.hpp>
 #include <rclcpp_components/register_node_macro.hpp>
-#include <picamera_param/picamera_param.hpp>
 
 namespace picamera_ros
 {
@@ -25,9 +24,14 @@ public:
 
 private:
     PiCamera *camera_;
+    int video_width_;
+    int video_height_;
+    int framerate_;
+    bool verbose_;
+    bool hdr_;
+    float shutter;
 
-    std::shared_ptr<picamera_parameters::ParamListener> param_listener_;
-    picamera_parameters::Params params_;
+    rclcpp::Time camera_initilaize_time;
 
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
