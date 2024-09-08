@@ -69,18 +69,6 @@ def generate_launch_description():
                 package='rosbag2_transport',
                 plugin='rosbag2_transport::Recorder',
                 name='rosbag2_recorder',
-                parameters=[{
-                    'ros__parameters': {
-                        'record': {
-                            'all_topics': [LaunchConfiguration('true')],
-                        },
-                        'storage': {
-                            'storage_id': LaunchConfiguration('storage_id'),
-                            'uri': LaunchConfiguration('bag_output_directory'),
-                            'max_cache_size': 0,
-                        },
-                    }
-                }],
                 extra_arguments=[{'use_intra_process_comms': True}],
             ),
         ],
