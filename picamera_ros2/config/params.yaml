@@ -1,0 +1,13 @@
+rosbag2_recorder:
+  ros__parameters:
+
+    use_sim_time: false
+
+    record:
+      all_topics: true
+      all_services: true
+
+    storage:
+      uri: "test"
+      storage_id: "mcap"
+      max_cache_size: 0
