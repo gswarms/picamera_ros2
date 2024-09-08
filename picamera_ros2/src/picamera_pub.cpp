@@ -78,6 +78,7 @@ void PiCameraROS::timerCallback()
     cv_image.image = image;
     cv_image.toImageMsg(image_msg);
     image_pub_->publish(image_msg);
+    RCLCPP_INFO(this->get_logger(), "Publishing image");
 }
 
 }
