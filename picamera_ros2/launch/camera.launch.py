@@ -4,12 +4,17 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
 import os
+import time
 from ament_index_python.packages import get_package_share_directory
 
 params = os.path.join(
     get_package_share_directory("picamera_ros2"), "config", "params.yaml"
 )
 
+
+current_time = time.strftime(
+        "%Y%m%d_%H%M", time.localtime(time.time() + 3 * 60 * 60)
+    )
 
 def generate_launch_description():
     launch_args = [
@@ -30,6 +35,12 @@ def generate_launch_description():
             "shutter",
             default_value="1000.0",
             description="Shutter speed of the camera in milliseconds.",
+        ),
+        # Declare a new launch argument for the 'uri' parameter
+        DeclareLaunchArgument(
+            "bag_uri",
+            default_value=f"/bags/camera_{current_time}",
+            description="URI for the rosbag storage.",
         ),
     ]
 
@@ -60,7 +71,15 @@ def generate_launch_description():
                 plugin="rosbag2_transport::Recorder",
                 name="rosbag2_recorder",
                 extra_arguments=[{"use_intra_process_comms": True}],
-                parameters=[params],
+                parameters=[
+                    params,
+                    {
+                        # Override the 'storage' -> 'uri' parameter
+                        "storage": {
+                            "uri": LaunchConfiguration("bag_uri"),
+                        },
+                    },
+                ],
             ),
         ],
         output="screen",
