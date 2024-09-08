@@ -53,7 +53,7 @@ def generate_launch_description():
         package='rclcpp_components',
         executable='component_container',
         composable_node_descriptions=[
-            ## Camera node
+            # Camera node
             ComposableNode(
                 package='picamera_ros2',
                 plugin='picamera_ros::PiCameraROS',
@@ -66,7 +66,7 @@ def generate_launch_description():
                 extra_arguments=[{'use_intra_process_comms': True}],
             ),
             
-            ## Rosbag2 recorder node to record camera topic only
+            # Rosbag2 recorder node to record camera topic only
             ComposableNode(
                 package='rosbag2_transport',
                 plugin='rosbag2_transport::Recorder',
