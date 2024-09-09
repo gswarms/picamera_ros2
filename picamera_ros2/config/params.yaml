@@ -11,3 +11,14 @@ rosbag2_recorder:
       uri: "/bags/camera"
       storage_id: "mcap"
       max_cache_size: 0
+
+
+
+picamera_ros2:
+  ros__parameters:
+    video_width: 640
+    video_heigh: 480
+    framerate: 30
+    shutter: 1000.0
+    hdr: false
+    verbose: false

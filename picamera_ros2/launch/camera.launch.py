@@ -12,31 +12,11 @@ params = os.path.join(
 )
 
 
-current_time = time.strftime(
-        "%Y%m%d_%H%M", time.localtime(time.time() + 3 * 60 * 60)
-    )
+current_time = time.strftime("%Y%m%d_%H%M", time.localtime(time.time() + 3 * 60 * 60))
+
 
 def generate_launch_description():
     launch_args = [
-        DeclareLaunchArgument(
-            "video_width", default_value="640", description="Width of the video stream."
-        ),
-        DeclareLaunchArgument(
-            "video_height",
-            default_value="480",
-            description="Height of the video stream.",
-        ),
-        DeclareLaunchArgument(
-            "framerate",
-            default_value="30",
-            description="Framerate of the video stream.",
-        ),
-        DeclareLaunchArgument(
-            "shutter",
-            default_value="1000.0",
-            description="Shutter speed of the camera in milliseconds.",
-        ),
-        # Declare a new launch argument for the 'uri' parameter
         DeclareLaunchArgument(
             "bag_uri",
             default_value=f"/bags/camera_{current_time}",
@@ -55,17 +35,10 @@ def generate_launch_description():
                 package="picamera_ros2",
                 plugin="picamera_ros::PiCameraROS",
                 name="picamera_ros2",
-                parameters=[
-                    {
-                        "video_width": LaunchConfiguration("video_width"),
-                        "video_height": LaunchConfiguration("video_height"),
-                        "framerate": LaunchConfiguration("framerate"),
-                        "shutter": LaunchConfiguration("shutter"),
-                    }
-                ],
+                parameters=[[params]],
                 extra_arguments=[{"use_intra_process_comms": True}],
             ),
-            # Rosbag2 recorder node to record camera topic only
+            # Rosbag2 recorder
             ComposableNode(
                 package="rosbag2_transport",
                 plugin="rosbag2_transport::Recorder",
@@ -74,7 +47,6 @@ def generate_launch_description():
                 parameters=[
                     params,
                     {
-                        # Override the 'storage' -> 'uri' parameter
                         "storage": {
                             "uri": LaunchConfiguration("bag_uri"),
                         },
