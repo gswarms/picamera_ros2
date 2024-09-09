@@ -7,6 +7,8 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
 {
     this->camera_ = new lccv::PiCamera();
 
+    this->image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 1);
+
     this->declare_parameter("video_width", 640);
     this->declare_parameter("video_height", 480);
     this->declare_parameter("framerate", 30);
@@ -31,11 +33,12 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
     // mesuring time to start camera
     this->camera_->options->setExposureMode(Exposure_Modes::EXPOSURE_SHORT);
 
+    RCLCPP_INFO(this->get_logger(), "Starting camera with width: %d, height: %d, framerate: %d, shutter: %f", this->video_width_, this->video_height_, this->framerate_, this->shutter);
+
     this->camera_->startVideo();
 
     camera_initilaize_time = this->now();
 
-    this->image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 1);
     this->timer_ = this->create_wall_timer(std::chrono::milliseconds(1000 / this->framerate_), std::bind(&PiCameraROS::timerCallback, this));
 }
 

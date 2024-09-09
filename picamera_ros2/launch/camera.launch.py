@@ -14,6 +14,7 @@ params = os.path.join(
 
 current_time = time.strftime("%Y%m%d_%H%M", time.localtime(time.time() + 3 * 60 * 60))
 
+print(f"current_time: {current_time}")
 
 def generate_launch_description():
     launch_args = [
