@@ -4,9 +4,7 @@ rosbag2_recorder:
     use_sim_time: false
 
     record:
-      all_topics: false
-      topics: ["/camera/image_raw"]
-
+      all_topics: true
       all_services: true
 
     storage:

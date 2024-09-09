@@ -65,10 +65,7 @@ void PiCameraROS::timerCallback()
 
     this->camera_->getVideoFrame(image, 1000);
 
-    // convert to grayscale
-    cv::cvtColor(image, image, cv::COLOR_BGR2GRAY);
-
-    cv_image.encoding = sensor_msgs::image_encodings::MONO8;
+    cv_image.encoding = sensor_msgs::image_encodings::BGR8;
     cv_image.image = image;
     cv_image.toImageMsg(image_msg);
     image_msg.header.frame_id = "camera";
