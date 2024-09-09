@@ -4,12 +4,21 @@ rosbag2_recorder:
     use_sim_time: false
 
     record:
-      all_topics: false
-      topics: ["/camera/image_raw"]
-
+      all_topics: true
       all_services: true
 
     storage:
       uri: "/bags/camera"
       storage_id: "mcap"
       max_cache_size: 0
+
+
+
+picamera_ros2:
+  ros__parameters:
+    video_width: 640
+    video_heigh: 480
+    framerate: 30
+    shutter: 1000.0
+    hdr: false
+    verbose: false
