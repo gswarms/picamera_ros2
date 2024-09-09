@@ -6,7 +6,7 @@ rosbag2_recorder:
     record:
       all_topics: false
       all_services: true
-      topics: ["camera/image_raw"]
+      topics: ["/camera/image_raw"]
 
     storage:
       uri: "/bags/camera"
