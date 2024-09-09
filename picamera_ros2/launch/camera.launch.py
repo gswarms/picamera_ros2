@@ -35,7 +35,7 @@ def generate_launch_description():
                 package="picamera_ros2",
                 plugin="picamera_ros::PiCameraROS",
                 name="picamera_ros2",
-                parameters=[[params]],
+                parameters=[params],
                 extra_arguments=[{"use_intra_process_comms": True}],
             ),
             # Rosbag2 recorder
