@@ -19,7 +19,7 @@ picamera_ros2:
   ros__parameters:
     video_width: 640
     video_heigh: 480
-    framerate: 30
+    framerate: 20
     shutter: 1000.0
     hdr: false
     verbose: false
