@@ -1,19 +1,9 @@
-rosbag2_recorder:
+recorder:
   ros__parameters:
 
     use_sim_time: false
-
-    record:
-      all_topics: false
-      all_services: true
-      topics: ["/camera/image_raw"]
-
-    storage:
-      uri: "/bags/camera"
-      storage_id: "mcap"
-      max_cache_size: 0
-
-
+    bag_uri: /tmp/rosbag2_0
+    topic_names: '/camera/image_raw'
 
 picamera_ros2:
   ros__parameters:

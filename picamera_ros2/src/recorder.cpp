@@ -7,7 +7,7 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
 {
   // Declare parameters for topic name and bag name
   topic_name_ = this->declare_parameter<std::string>("topic_name", "/camera/image_raw");
-  bag_name_ = this->declare_parameter<std::string>("bag_name", "my_bag");
+  bag_name_ = this->declare_parameter<std::string>("bag_uri", "my_bag");
 
   writer_ = std::make_unique<rosbag2_cpp::Writer>();
   writer_->open(bag_name_);
@@ -17,8 +17,13 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
     topic_name_, 10, std::bind(&Recorder::image_callback, this, std::placeholders::_1));
 
   // Subscription to vehicle state topic (e.g., armed state)
+  rclcpp::QoS qos_profile = rclcpp::QoS(1);  
+  qos_profile
+  .reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
+  .durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL)
+  .history(RMW_QOS_POLICY_HISTORY_KEEP_LAST);
   vehicle_status_subscription_ = create_subscription<px4_msgs::msg::VehicleStatus>(
-    "/fmu/out/vehicle_state", 10, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
+    "/fmu/out/vehicle_state", qos_profile, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
 }
 
 Recorder::~Recorder()

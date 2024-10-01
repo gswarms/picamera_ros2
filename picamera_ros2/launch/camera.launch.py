@@ -44,9 +44,9 @@ def generate_launch_description():
             ),
             # Rosbag2 recorder
             ComposableNode(
-                package="rosbag2_transport",
-                plugin="rosbag2_transport::Recorder",
-                name="rosbag2_recorder",
+                package="picamera_ros2",
+                plugin="picamera_ros2::Recorder",
+                name="recorder",
                 extra_arguments=[{"use_intra_process_comms": True}],
                 parameters=[
                     params,

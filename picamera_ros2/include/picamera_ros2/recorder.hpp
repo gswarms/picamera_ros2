@@ -7,6 +7,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rosbag2_cpp/writer.hpp"
+#include "rclcpp/qos.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include "px4_msgs/msg/vehicle_status.hpp"
 

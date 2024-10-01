@@ -32,9 +32,20 @@ ament_auto_add_executable(${TARGET}_exec src/${TARGET}.cpp)
 ament_target_dependencies(${TARGET}_exec 
     cv_bridge
     vision_msgs
+)
+# ===================================================================
+
+# recorder ======================================
+set(TARGET recorder)
+ament_auto_add_library(${TARGET} SHARED src/${TARGET}.cpp)
+rclcpp_components_register_nodes(${TARGET} "picamera_ros::Recorder")
+# ===================================================================
+
+# picamera_pub_exec ======================================
+ament_auto_add_executable(${TARGET}_exec src/${TARGET}.cpp)
+ament_target_dependencies(${TARGET}_exec 
     px4_msgs
 )
-# target_link_libraries(${TARGET}_exec -llccv)
 # ===================================================================
 
 install(DIRECTORY
