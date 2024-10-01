@@ -7,14 +7,17 @@ import os
 import time
 from ament_index_python.packages import get_package_share_directory
 
-params = os.path.join(
+default_params = os.path.join(
     get_package_share_directory("picamera_ros2"), "config", "params.yaml"
 )
+mounted_params = "/config/camera/params.yaml"
 
+params = mounted_params if os.path.exists(mounted_params) else default_params
 
 current_time = time.strftime("%Y%m%d_%H%M", time.localtime(time.time() + 3 * 60 * 60))
 
 print(f"current_time: {current_time}")
+
 
 def generate_launch_description():
     launch_args = [
