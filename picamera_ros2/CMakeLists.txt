@@ -12,6 +12,7 @@ endif()
 find_package(ament_cmake_auto REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(vision_msgs REQUIRED)
+find_package(px4_msgs REQUIRED)
 ament_auto_find_build_dependencies()
 
 # libcamera
@@ -31,6 +32,7 @@ ament_auto_add_executable(${TARGET}_exec src/${TARGET}.cpp)
 ament_target_dependencies(${TARGET}_exec 
     cv_bridge
     vision_msgs
+    px4_msgs
 )
 # target_link_libraries(${TARGET}_exec -llccv)
 # ===================================================================
