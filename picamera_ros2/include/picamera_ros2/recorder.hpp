@@ -19,7 +19,7 @@ public:
 
 private:
   void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg);
-  void image_callback(const sensor_msgs::msg::Image::SharedPtr msg) const;
+  void image_callback(const sensor_msgs::msg::Image::SharedPtr msg);
   void initialize_recorder();
   void stop_recording();
 

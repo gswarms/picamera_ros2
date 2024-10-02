@@ -1,6 +1,4 @@
 import launch
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
 import os
@@ -36,7 +34,7 @@ def generate_launch_description():
             # Rosbag2 recorder
             ComposableNode(
                 package="picamera_ros2",
-                plugin="picamera_ros2::Recorder",
+                executable="recorder_exec",
                 name="recorder",
                 parameters=[params],
                 extra_arguments=[{"use_intra_process_comms": True}],

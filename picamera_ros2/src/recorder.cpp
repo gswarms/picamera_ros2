@@ -22,6 +22,8 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
   .history(RMW_QOS_POLICY_HISTORY_KEEP_LAST);
   vehicle_status_subscription_ = create_subscription<px4_msgs::msg::VehicleStatus>(
     "/fmu/out/vehicle_state", qos_profile, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
+
+  RCLCPP_INFO(this->get_logger(), "Recorder node initialized");
 }
 
 Recorder::~Recorder()
@@ -39,12 +41,14 @@ void Recorder::initialize_recorder()
   writer_ = std::make_unique<rosbag2_cpp::Writer>();
   writer_->open(current_time);
   initialized_ = true;
+  RCLCPP_INFO(this->get_logger(), "Recording started, bag name: %s", current_time.c_str());
 }
 
 void Recorder::stop_recording()
 {
   writer_->~Writer();
   initialized_ = false;
+  RCLCPP_INFO(this->get_logger(), "Recording stopped");
 }
 
 void Recorder::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg)
@@ -53,14 +57,13 @@ void Recorder::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::Share
   nav_mode_ = msg->nav_state;
 }
 
-void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg) const
+void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
   if (nav_mode_ == px4_msgs::msg::VehicleStatus::NAVIGATION_STATE_OFFBOARD)
   {
     if (!initialized_)
     {
-      initialize_recorder();
-      RCLCPP_INFO(this->get_logger(), "Recording started");
+      this->initialize_recorder();
     }
     rclcpp::Time time_stamp = this->now();
 
@@ -73,8 +76,7 @@ void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg) cons
   } else {
     if (initialized_)
     {
-      stop_recording();
-      RCLCPP_INFO(this->get_logger(), "Recording stopped");
+      this->stop_recording();
     }
   }
 }
