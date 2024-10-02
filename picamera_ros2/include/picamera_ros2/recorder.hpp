@@ -9,7 +9,7 @@
 #include "rosbag2_cpp/writer.hpp"
 #include "rclcpp/qos.hpp"
 #include "sensor_msgs/msg/image.hpp"
-#include "px4_msgs/msg/vehicle_status.hpp"
+#include "std_msgs/msg/string.hpp"
 
 class Recorder : public rclcpp::Node
 {
@@ -18,19 +18,19 @@ public:
   ~Recorder();
 
 private:
-  void vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg);
+  void vehicle_status_callback(const std_msgs::msg::String::SharedPtr msg);
   void image_callback(const sensor_msgs::msg::Image::SharedPtr msg);
   void initialize_recorder();
   void stop_recording();
 
   std::string topic_name_;
+  std::string state_topic_name_;
   std::string bag_name_;
-  bool armed_;
-  int  nav_mode_;
+  std::string nav_mode_;
   bool initialized_;
 
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscription_;
-  rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr vehicle_status_subscription_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr vehicle_status_subscription_;
   std::unique_ptr<rosbag2_cpp::Writer> writer_;
 };
 

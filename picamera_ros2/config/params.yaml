@@ -3,6 +3,7 @@ recorder:
     use_sim_time: false
     bag_uri: /tmp/rosbag2_0
     topic_names: '/camera/image_raw'
+    state_topic_name_: "/interceptor/state"
 
 picamera_ros2:
   ros__parameters:

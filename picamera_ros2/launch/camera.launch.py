@@ -35,7 +35,7 @@ def generate_launch_description():
             ComposableNode(
                 package="picamera_ros2",
                 executable="recorder_exec",
-                name="recorder",
+                plugin="Recorder",
                 parameters=[params],
                 extra_arguments=[{"use_intra_process_comms": True}],
             ),

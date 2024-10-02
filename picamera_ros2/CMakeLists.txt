@@ -37,7 +37,7 @@ ament_target_dependencies(${TARGET}_exec
 # recorder ======================================
 set(RECORD_TARGET recorder)
 ament_auto_add_library(${RECORD_TARGET} SHARED src/${RECORD_TARGET}.cpp)
-rclcpp_components_register_nodes(${RECORD_TARGET} "picamera_ros::Recorder")
+rclcpp_components_register_nodes(${RECORD_TARGET} "Recorder")
 # ===================================================================
 
 # picamera_pub_exec ======================================

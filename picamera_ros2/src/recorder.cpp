@@ -7,21 +7,18 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
 {
   this->declare_parameter<std::string>("topic_name", "/camera/image_raw");
   this->get_parameter("topic_name", topic_name_);
+  this->declare_parameter<std::string>("state_topic_name", "/interceptor/state");
+  this->get_parameter("topic_name", state_topic_name_);
 
   initialized_ = false;
 
   // Subscription to the image topic
   image_subscription_ = create_subscription<sensor_msgs::msg::Image>(
-    topic_name_, 10, std::bind(&Recorder::image_callback, this, std::placeholders::_1));
+    topic_name_, 1, std::bind(&Recorder::image_callback, this, std::placeholders::_1));
 
-  // Subscription to vehicle state topic (e.g., armed state)
-  rclcpp::QoS qos_profile = rclcpp::QoS(1);  
-  qos_profile
-  .reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT)
-  .durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL)
-  .history(RMW_QOS_POLICY_HISTORY_KEEP_LAST);
-  vehicle_status_subscription_ = create_subscription<px4_msgs::msg::VehicleStatus>(
-    "/fmu/out/vehicle_state", qos_profile, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
+  // Subscription to the vehicle status topic
+  vehicle_status_subscription_ = create_subscription<std_msgs::msg::String>(
+    state_topic_name_, 1, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
 
   RCLCPP_INFO(this->get_logger(), "Recorder node initialized");
 }
@@ -51,15 +48,14 @@ void Recorder::stop_recording()
   RCLCPP_INFO(this->get_logger(), "Recording stopped");
 }
 
-void Recorder::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg)
+void Recorder::vehicle_status_callback(const std_msgs::msg::String::SharedPtr msg)
 {
-  armed_ = (msg->arming_state == px4_msgs::msg::VehicleStatus::ARMING_STATE_ARMED);
-  nav_mode_ = msg->nav_state;
+  nav_mode_ = msg->data;
 }
 
 void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
-  if (nav_mode_ == px4_msgs::msg::VehicleStatus::NAVIGATION_STATE_OFFBOARD)
+  if (strcmp(nav_mode_, "INTERCEPT") == 0)
   {
     if (!initialized_)
     {
