@@ -5,12 +5,10 @@
 Recorder::Recorder(const rclcpp::NodeOptions & options)
 : Node("recorder", options), armed_(false)
 {
-  // Declare parameters for topic name and bag name
-  topic_name_ = this->declare_parameter<std::string>("topic_name", "/camera/image_raw");
-  bag_name_ = this->declare_parameter<std::string>("bag_uri", "my_bag");
+  this->declare_parameter<std::string>("topic_name", "/camera/image_raw");
+  this->get_parameter("topic_name", topic_name_);
 
-  writer_ = std::make_unique<rosbag2_cpp::Writer>();
-  writer_->open(bag_name_);
+  initialized_ = false;
 
   // Subscription to the image topic
   image_subscription_ = create_subscription<sensor_msgs::msg::Image>(
@@ -28,18 +26,42 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
 
 Recorder::~Recorder()
 {
+  return;
+}
+
+void Recorder::initialize_recorder()
+{
+  // get current time
+  std::time_t t = std::time(0);
+  std::tm* now = std::localtime(&t);
+  std::string current_time = "camera_" + std::to_string(now->tm_year + 1900) + "_" + std::to_string(now->tm_mon + 1) + "_" + std::to_string(now->tm_mday) + "-" + std::to_string(now->tm_hour) + "_" + std::to_string(now->tm_min) + "_" + std::to_string(now->tm_sec);
+
+  writer_ = std::make_unique<rosbag2_cpp::Writer>();
+  writer_->open(current_time);
+  initialized_ = true;
+}
+
+void Recorder::stop_recording()
+{
   writer_->~Writer();
+  initialized_ = false;
 }
 
 void Recorder::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg)
 {
   armed_ = (msg->arming_state == px4_msgs::msg::VehicleStatus::ARMING_STATE_ARMED);
+  nav_mode_ = msg->nav_state;
 }
 
 void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg) const
 {
-  if (armed_)
+  if (nav_mode_ == px4_msgs::msg::VehicleStatus::NAVIGATION_STATE_OFFBOARD)
   {
+    if (!initialized_)
+    {
+      initialize_recorder();
+      RCLCPP_INFO(this->get_logger(), "Recording started");
+    }
     rclcpp::Time time_stamp = this->now();
 
     // Serialize the image message and write to the bag
@@ -48,6 +70,12 @@ void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg) cons
     serializer.serialize_message(msg.get(), &serialized_msg);
 
     writer_->write(serialized_msg, topic_name_, "sensor_msgs/msg/Image", time_stamp);
+  } else {
+    if (initialized_)
+    {
+      stop_recording();
+      RCLCPP_INFO(this->get_logger(), "Recording stopped");
+    }
   }
 }
 

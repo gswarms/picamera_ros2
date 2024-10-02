@@ -15,19 +15,10 @@ mounted_params = "/config/camera/params.yaml"
 params = mounted_params if os.path.exists(mounted_params) else default_params
 
 current_time = time.strftime("%Y%m%d_%H%M", time.localtime(time.time() + 3 * 60 * 60))
-
 print(f"current_time: {current_time}")
 
 
 def generate_launch_description():
-    launch_args = [
-        DeclareLaunchArgument(
-            "bag_uri",
-            default_value=f"/bags/camera_{current_time}",
-            description="URI for the rosbag storage.",
-        ),
-    ]
-
     container = ComposableNodeContainer(
         name="picamera_ros2_container",
         namespace="",
@@ -47,18 +38,11 @@ def generate_launch_description():
                 package="picamera_ros2",
                 plugin="picamera_ros2::Recorder",
                 name="recorder",
+                parameters=[params],
                 extra_arguments=[{"use_intra_process_comms": True}],
-                parameters=[
-                    params,
-                    {
-                        "storage": {
-                            "uri": LaunchConfiguration("bag_uri"),
-                        },
-                    },
-                ],
             ),
         ],
         output="screen",
     )
 
-    return launch.LaunchDescription(launch_args + [container])
+    return launch.LaunchDescription([container])

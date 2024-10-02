@@ -1,6 +1,5 @@
 recorder:
   ros__parameters:
-
     use_sim_time: false
     bag_uri: /tmp/rosbag2_0
     topic_names: '/camera/image_raw'
