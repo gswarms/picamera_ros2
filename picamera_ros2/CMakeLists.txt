@@ -11,8 +11,8 @@ endif()
 
 find_package(ament_cmake_auto REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(vision_msgs REQUIRED)
-find_package(px4_msgs REQUIRED)
 find_package(rosbag2_cpp REQUIRED)
 ament_auto_find_build_dependencies()
 
@@ -42,8 +42,8 @@ rclcpp_components_register_nodes(${RECORD_TARGET} "Recorder")
 
 # picamera_pub_exec ======================================
 ament_auto_add_executable(${RECORD_TARGET}_exec src/${RECORD_TARGET}.cpp)
-ament_target_dependencies(${RECORD_TARGET}_exec 
-    px4_msgs
+ament_target_dependencies(${RECORD_TARGET}_exec
+    std_msgs 
     rosbag2_cpp
 )
 # ===================================================================
