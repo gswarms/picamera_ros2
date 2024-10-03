@@ -40,7 +40,7 @@ void Recorder::initialize_recorder()
   // get current time
   std::time_t t = std::time(0);
   std::tm* now = std::localtime(&t);
-  std::string current_time = "camera_" + std::to_string(now->tm_year + 1900) + "_" + std::to_string(now->tm_mon + 1) + "_" + std::to_string(now->tm_mday) + "-" + std::to_string(now->tm_hour) + "_" + std::to_string(now->tm_min) + "_" + std::to_string(now->tm_sec);
+  std::string current_time = "/bags/camera_" + std::to_string(now->tm_year + 1900) + "_" + std::to_string(now->tm_mon + 1) + "_" + std::to_string(now->tm_mday) + "-" + std::to_string(now->tm_hour) + "_" + std::to_string(now->tm_min) + "_" + std::to_string(now->tm_sec);
 
   writer_ = std::make_unique<rosbag2_cpp::Writer>();
   writer_->open(current_time);
@@ -59,7 +59,7 @@ void Recorder::vehicle_status_callback(const std_msgs::msg::String::SharedPtr ms
 {
   nav_mode_ = msg->data;
   auto & clk = *this->get_clock();
-  RCLCPP_WARN_THROTTLE(this->get_logger(), clk, 2000, "nav_mode: %s", nav_mode_.c_str());
+  RCLCPP_INFO_THROTTLE(this->get_logger(), clk, 4000, "nav_mode: %s", nav_mode_.c_str());
 }
 
 void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
