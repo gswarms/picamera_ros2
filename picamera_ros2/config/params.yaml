@@ -1,21 +1,11 @@
-rosbag2_recorder:
+recorder:
   ros__parameters:
-
     use_sim_time: false
+    topic_names: '/camera/image_raw'
+    state_topic_name: "/interceptor/state"
+    recording_state: "INTERCEPT"
 
-    record:
-      all_topics: false
-      all_services: true
-      topics: ["/camera/image_raw"]
-
-    storage:
-      uri: "/bags/camera"
-      storage_id: "mcap"
-      max_cache_size: 0
-
-
-
-picamera_ros2:
+camera:
   ros__parameters:
     video_width: 640
     video_heigh: 480
