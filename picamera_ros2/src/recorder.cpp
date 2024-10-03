@@ -3,12 +3,12 @@
 #include "rclcpp_components/register_node_macro.hpp"
 
 Recorder::Recorder(const rclcpp::NodeOptions & options)
-: Node("recorder", options), armed_(false)
+: Node("recorder", options)
 {
   this->declare_parameter<std::string>("topic_name", "/camera/image_raw");
   this->get_parameter("topic_name", topic_name_);
   this->declare_parameter<std::string>("state_topic_name", "/interceptor/state");
-  this->get_parameter("topic_name", state_topic_name_);
+  this->get_parameter("state_topic_name", state_topic_name_);
 
   initialized_ = false;
 
@@ -55,7 +55,7 @@ void Recorder::vehicle_status_callback(const std_msgs::msg::String::SharedPtr ms
 
 void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
-  if (strcmp(nav_mode_, "INTERCEPT") == 0)
+  if (strcmp(nav_mode_.c_str(), "INTERCEPT") == 0)
   {
     if (!initialized_)
     {
