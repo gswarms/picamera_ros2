@@ -3,8 +3,9 @@ recorder:
     use_sim_time: false
     topic_names: '/camera/image_raw'
     state_topic_name: "/interceptor/state"
+    recording_state: "INTERCEPT"
 
-picamera_ros2:
+camera:
   ros__parameters:
     video_width: 640
     video_heigh: 480

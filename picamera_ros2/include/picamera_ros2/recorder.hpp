@@ -27,6 +27,7 @@ private:
   std::string state_topic_name_;
   std::string bag_name_;
   std::string nav_mode_;
+  std::string recording_state_;
   bool initialized_;
 
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscription_;

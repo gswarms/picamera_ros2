@@ -9,6 +9,8 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
   this->get_parameter("topic_name", topic_name_);
   this->declare_parameter<std::string>("state_topic_name", "/interceptor/state");
   this->get_parameter("state_topic_name", state_topic_name_);
+  this->declare_parameter<std::string>("recording_state", "INTERCEPT");
+  this->get_parameter("recording_state", recording_state_);
 
   initialized_ = false;
 
@@ -21,6 +23,11 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
     state_topic_name_, 1, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
 
   RCLCPP_INFO(this->get_logger(), "Recorder node initialized");
+  // print configuration + parameters
+  RCLCPP_INFO(this->get_logger(), "topic_name: %s", topic_name_.c_str());
+  RCLCPP_INFO(this->get_logger(), "state_topic_name: %s", state_topic_name_.c_str());
+  RCLCPP_INFO(this->get_logger(), "recording_state: %s", recording_state_.c_str());
+  
 }
 
 Recorder::~Recorder()
@@ -51,11 +58,13 @@ void Recorder::stop_recording()
 void Recorder::vehicle_status_callback(const std_msgs::msg::String::SharedPtr msg)
 {
   nav_mode_ = msg->data;
+  auto & clk = *this->get_clock();
+  RCLCPP_WARN_THROTTLE(this->get_logger(), clk, 2000, "nav_mode: %s", nav_mode_.c_str());
 }
 
 void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
-  if (strcmp(nav_mode_.c_str(), "INTERCEPT") == 0)
+  if (strcmp(nav_mode_.c_str(), recording_state_.c_str()) == 0)
   {
     if (!initialized_)
     {
