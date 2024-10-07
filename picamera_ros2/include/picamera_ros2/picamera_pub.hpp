@@ -30,11 +30,13 @@ private:
     bool verbose_;
     bool hdr_;
     float shutter;
+    bool publish_grayscale_image_;
 
     rclcpp::Time camera_initilaize_time;
 
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr gray_image_pub_;
 };
 
 }

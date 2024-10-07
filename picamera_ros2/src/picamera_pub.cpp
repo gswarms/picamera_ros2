@@ -8,6 +8,7 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
     this->camera_ = new lccv::PiCamera();
 
     this->image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/camera/image_raw", 1);
+    this->gray_image_pub_ = this->create_publisher<sensor_msgs::msg::Image>("/camera/gray_image", 1);
 
     this->declare_parameter("video_width", 640);
     this->declare_parameter("video_height", 480);
@@ -15,6 +16,7 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
     this->declare_parameter("shutter", 1000.0);
     this->declare_parameter("hdr", false);
     this->declare_parameter("verbose", false);
+    this->declare_parameter("publish_grayscale_image", false);
 
     this->get_parameter("video_width", this->video_width_);
     this->get_parameter("video_height", this->video_height_);
@@ -22,6 +24,7 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
     this->get_parameter("hdr", this->hdr_);
     this->get_parameter("shutter", this->shutter);
     this->get_parameter("verbose", this->verbose_);
+    this->get_parameter("publish_grayscale_image", this->publish_grayscale_image_);
 
     this->camera_->options->video_width = this->video_width_;
     this->camera_->options->video_height = this->video_height_;
@@ -33,7 +36,7 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
     // mesuring time to start camera
     this->camera_->options->setExposureMode(Exposure_Modes::EXPOSURE_SHORT);
 
-    RCLCPP_INFO(this->get_logger(), "Starting camera with width: %d, height: %d, framerate: %d, shutter: %f", this->video_width_, this->video_height_, this->framerate_, this->shutter);
+    RCLCPP_INFO(this->get_logger(), "Starting camera with\n width: %d\n height: %d\n framerate: %d\n shutter: %f", this->video_width_, this->video_height_, this->framerate_, this->shutter);
 
     this->camera_->startVideo();
 
@@ -51,8 +54,7 @@ void PiCameraROS::timerCallback()
 {
     sensor_msgs::msg::Image image_msg;
     cv_bridge::CvImage cv_image;
-    cv::Mat image;
-
+    
     rclcpp::Time current_time = this->now();
     float time_diff = (current_time - camera_initilaize_time).seconds();
 
@@ -66,14 +68,29 @@ void PiCameraROS::timerCallback()
 
     rclcpp::Time timestamp = rclcpp::Duration(time_s, time_ns) + camera_initilaize_time;
 
-    this->camera_->getVideoFrame(image, 1000);
+    this->camera_->getVideoFrame(cv_image.image, 1000);
 
     cv_image.encoding = sensor_msgs::image_encodings::BGR8;
-    cv_image.image = image;
     cv_image.toImageMsg(image_msg);
     image_msg.header.frame_id = "camera";
     image_msg.header.stamp = timestamp;  
     image_pub_->publish(image_msg);
+
+    if (this->publish_grayscale_image_)
+    {
+        sensor_msgs::msg::Image gray_image_msg;
+        cv_bridge::CvImage cv_gray_image;
+
+        cv::cvtColor(cv_image.image, cv_gray_image.image, cv::COLOR_BGR2GRAY);
+
+        cv_gray_image.encoding = sensor_msgs::image_encodings::MONO8;
+        cv_gray_image.toImageMsg(gray_image_msg);
+        gray_image_msg.header.frame_id = "camera";
+        gray_image_msg.header.stamp = timestamp;
+        gray_image_pub_->publish(gray_image_msg);
+    }
+    return;
+
 }
 
 }
