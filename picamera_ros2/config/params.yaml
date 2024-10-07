@@ -13,3 +13,4 @@ camera:
     shutter: 1000.0
     hdr: false
     verbose: false
+    publish_grayscale_image: false
