@@ -7,26 +7,27 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
 {
   this->declare_parameter<std::string>("topic_name", "/camera/image_raw");
   this->get_parameter("topic_name", topic_name_);
-  this->declare_parameter<std::string>("state_topic_name", "/interceptor/state");
+  this->declare_parameter<std::string>("state_topic_name", "/fmu/out/vehicle_status");
   this->get_parameter("state_topic_name", state_topic_name_);
-  this->declare_parameter<std::string>("recording_state", "INTERCEPT");
+  this->declare_parameter<uint8_t>("recording_state", 14);
   this->get_parameter("recording_state", recording_state_);
 
   initialized_ = false;
+  nav_mode_ = 0;
 
   // Subscription to the image topic
   image_subscription_ = create_subscription<sensor_msgs::msg::Image>(
     topic_name_, 1, std::bind(&Recorder::image_callback, this, std::placeholders::_1));
 
   // Subscription to the vehicle status topic
-  vehicle_status_subscription_ = create_subscription<std_msgs::msg::String>(
+  vehicle_status_subscription_ = create_subscription<px4_msgs::msg::VehicleStatus>(
     state_topic_name_, 1, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
 
   RCLCPP_INFO(this->get_logger(), "Recorder node initialized");
   // print configuration + parameters
   RCLCPP_INFO(this->get_logger(), "topic_name: %s", topic_name_.c_str());
   RCLCPP_INFO(this->get_logger(), "state_topic_name: %s", state_topic_name_.c_str());
-  RCLCPP_INFO(this->get_logger(), "recording_state: %s", recording_state_.c_str());
+  RCLCPP_INFO(this->get_logger(), "recording_state: %d", recording_state_);
   
 }
 
@@ -55,16 +56,19 @@ void Recorder::stop_recording()
   RCLCPP_INFO(this->get_logger(), "Recording stopped");
 }
 
-void Recorder::vehicle_status_callback(const std_msgs::msg::String::SharedPtr msg)
+void Recorder::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg)
 {
-  nav_mode_ = msg->data;
-  auto & clk = *this->get_clock();
-  RCLCPP_INFO_THROTTLE(this->get_logger(), clk, 4000, "nav_mode: %s", nav_mode_.c_str());
+  if (nav_mode_ != msg->nav_state)
+  {
+    RCLCPP_INFO(this->get_logger(), "nav_mode changed to: %d", msg->nav_state);
+    nav_mode_ = msg->nav_state;
+  }
+
 }
 
 void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
-  if (strcmp(nav_mode_.c_str(), recording_state_.c_str()) == 0)
+  if (nav_mode_ == recording_state_)
   {
     if (!initialized_)
     {
