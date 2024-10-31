@@ -9,11 +9,12 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
   this->get_parameter("topic_name", topic_name_);
   this->declare_parameter<std::string>("state_topic_name", "/fmu/out/vehicle_status");
   this->get_parameter("state_topic_name", state_topic_name_);
-  this->declare_parameter<uint8_t>("recording_state", 14);
-  this->get_parameter("recording_state", recording_state_);
+  this->declare_parameter<uint8_t>("px4_record_state", 14);
+  this->get_parameter("recording_state", px4_record_state_);
 
   initialized_ = false;
-  nav_mode_ = 0;
+  px4_mode_ = 0;
+  interception_mode_ = "IDLE";
 
   // Subscription to the image topic
   image_subscription_ = create_subscription<sensor_msgs::msg::Image>(
@@ -23,11 +24,15 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
   vehicle_status_subscription_ = create_subscription<px4_msgs::msg::VehicleStatus>(
     state_topic_name_, 1, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
 
+  // Subscription to the interception mode topic
+  interception_mode_subscription_ = create_subscription<std_msgs::msg::String>(
+    "/interception/state", 1, std::bind(&Recorder::interception_mode_callback, this, std::placeholders::_1));
+
   RCLCPP_INFO(this->get_logger(), "Recorder node initialized");
   // print configuration + parameters
   RCLCPP_INFO(this->get_logger(), "topic_name: %s", topic_name_.c_str());
   RCLCPP_INFO(this->get_logger(), "state_topic_name: %s", state_topic_name_.c_str());
-  RCLCPP_INFO(this->get_logger(), "recording_state: %d", recording_state_);
+  RCLCPP_INFO(this->get_logger(), "recording_state: %d", px4_record_state_);
   
 }
 
@@ -58,17 +63,17 @@ void Recorder::stop_recording()
 
 void Recorder::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::SharedPtr msg)
 {
-  if (nav_mode_ != msg->nav_state)
+  if (px4_mode_ != msg->nav_state)
   {
     RCLCPP_INFO(this->get_logger(), "nav_mode changed to: %d", msg->nav_state);
-    nav_mode_ = msg->nav_state;
+    px4_mode_ = msg->nav_state;
   }
 
 }
 
 void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
-  if (nav_mode_ == recording_state_)
+  if ((px4_mode_ == px4_record_state_) && (interception_mode_ == interception_record_state_))
   {
     if (!initialized_)
     {
@@ -88,6 +93,11 @@ void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
       this->stop_recording();
     }
   }
+}
+
+void Recorder::interception_mode_callback(const std_msgs::msg::String::SharedPtr msg)
+{
+  interception_mode_ = msg->data;
 }
 
 // Register the component for composability
