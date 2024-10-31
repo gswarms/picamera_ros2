@@ -41,7 +41,8 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
   RCLCPP_INFO(this->get_logger(), "image_topic_name: %s", image_topic_name_.c_str());
   RCLCPP_INFO(this->get_logger(), "px4_mode_topic_name: %s", px4_mode_topic_name_.c_str());
   RCLCPP_INFO(this->get_logger(), "interception_mode_topic_name: %s", interception_mode_topic_name_.c_str());
-  RCLCPP_INFO(this->get_logger(), "recording_state: %d", px4_record_state_);
+  RCLCPP_INFO(this->get_logger(), "px4_record_state_: %d", px4_record_state_);
+  RCLCPP_INFO(this->get_logger(), "interception_record_state_: %s", interception_record_state_.c_str());
   
 }
 
@@ -95,7 +96,7 @@ void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
     rclcpp::Serialization<sensor_msgs::msg::Image> serializer;
     serializer.serialize_message(msg.get(), &serialized_msg);
 
-    writer_->write(serialized_msg, topic_name_, "sensor_msgs/msg/Image", time_stamp);
+    writer_->write(serialized_msg, image_topic_name_, "sensor_msgs/msg/Image", time_stamp);
   } else {
     if (initialized_)
     {
