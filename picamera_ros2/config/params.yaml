@@ -3,7 +3,8 @@ recorder:
     use_sim_time: false
     topic_names: '/camera/image_raw'
     state_topic_name: "/fmu/out/vehicle_state"
-    recording_state: 14 # 14: OFFBOARD, 0: MANUAL
+    px4_record_state_: 14 # 14: OFFBOARD, 0: MANUAL
+    interception_record_state_: "INTERCEPT"
 
 camera:
   ros__parameters:
