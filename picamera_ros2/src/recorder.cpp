@@ -10,7 +10,9 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
   this->declare_parameter<std::string>("state_topic_name", "/fmu/out/vehicle_status");
   this->get_parameter("state_topic_name", state_topic_name_);
   this->declare_parameter<uint8_t>("px4_record_state", 14);
-  this->get_parameter("recording_state", px4_record_state_);
+  this->get_parameter("px4_record_state", px4_record_state_);
+  this->declare_parameter<std::string>("interception_record_state", "INTERCEPT");
+  this->get_parameter("interception_record_state", interception_record_state_);
 
   initialized_ = false;
   px4_mode_ = 0;
