@@ -5,12 +5,18 @@
 Recorder::Recorder(const rclcpp::NodeOptions & options)
 : Node("recorder", options)
 {
-  this->declare_parameter<std::string>("topic_name", "/camera/image_raw");
-  this->get_parameter("topic_name", topic_name_);
-  this->declare_parameter<std::string>("state_topic_name", "/fmu/out/vehicle_status");
-  this->get_parameter("state_topic_name", state_topic_name_);
+  this->declare_parameter<std::string>("image_topic_name", "/camera/image_raw");
+  this->get_parameter("image_topic_name", image_topic_name_);
+
+  this->declare_parameter<std::string>("px4_mode_topic_name", "/fmu/out/vehicle_status");
+  this->get_parameter("px4_mode_topic_name_", px4_mode_topic_name_);
+
+  this->declare_parameter<std::string>("interception_mode_topic_name", "/interception/state");
+  this->get_parameter("interception_mode_topic_name", interception_mode_topic_name_);
+
   this->declare_parameter<uint8_t>("px4_record_state", 14);
   this->get_parameter("px4_record_state", px4_record_state_);
+
   this->declare_parameter<std::string>("interception_record_state", "INTERCEPT");
   this->get_parameter("interception_record_state", interception_record_state_);
 
@@ -20,15 +26,15 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
 
   // Subscription to the image topic
   image_subscription_ = create_subscription<sensor_msgs::msg::Image>(
-    topic_name_, 1, std::bind(&Recorder::image_callback, this, std::placeholders::_1));
+    image_topic_name_, 1, std::bind(&Recorder::image_callback, this, std::placeholders::_1));
 
   // Subscription to the vehicle status topic
   vehicle_status_subscription_ = create_subscription<px4_msgs::msg::VehicleStatus>(
-    state_topic_name_, 1, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
+    px4_mode_topic_name_, 1, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
 
   // Subscription to the interception mode topic
   interception_mode_subscription_ = create_subscription<std_msgs::msg::String>(
-    "/interception/state", 1, std::bind(&Recorder::interception_mode_callback, this, std::placeholders::_1));
+    interception_mode_topic_name_, 1, std::bind(&Recorder::interception_mode_callback, this, std::placeholders::_1));
 
   RCLCPP_INFO(this->get_logger(), "Recorder node initialized");
   // print configuration + parameters

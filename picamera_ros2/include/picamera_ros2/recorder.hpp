@@ -25,13 +25,17 @@ private:
   void initialize_recorder();
   void stop_recording();
 
-  std::string topic_name_;
-  std::string state_topic_name_;
+  std::string image_topic_name_;
+  std::string px4_mode_topic_name_;
+  std::string interception_mode_topic_name_;
+
   std::string bag_name_;
+
   uint8_t px4_mode_;
   std::string interception_mode_;
   uint8_t px4_record_state_;
   std::string interception_record_state_;
+
   bool initialized_;
 
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscription_;

@@ -1,8 +1,11 @@
 recorder:
   ros__parameters:
     use_sim_time: false
-    topic_names: '/camera/image_raw'
-    state_topic_name: "/fmu/out/vehicle_state"
+    
+    image_topic_name: '/camera/image_raw'
+    px4_mode_topic_name: "/fmu/out/vehicle_state"
+    interception_mode_topic_name: "/interception/state"
+
     px4_record_state_: 14 # 14: OFFBOARD, 0: MANUAL
     interception_record_state_: "INTERCEPT"
 
