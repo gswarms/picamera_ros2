@@ -38,8 +38,9 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
 
   RCLCPP_INFO(this->get_logger(), "Recorder node initialized");
   // print configuration + parameters
-  RCLCPP_INFO(this->get_logger(), "topic_name: %s", topic_name_.c_str());
-  RCLCPP_INFO(this->get_logger(), "state_topic_name: %s", state_topic_name_.c_str());
+  RCLCPP_INFO(this->get_logger(), "image_topic_name: %s", image_topic_name_.c_str());
+  RCLCPP_INFO(this->get_logger(), "px4_mode_topic_name: %s", px4_mode_topic_name_.c_str());
+  RCLCPP_INFO(this->get_logger(), "interception_mode_topic_name: %s", interception_mode_topic_name_.c_str());
   RCLCPP_INFO(this->get_logger(), "recording_state: %d", px4_record_state_);
   
 }
