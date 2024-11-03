@@ -6,8 +6,8 @@ recorder:
     px4_mode_topic_name: "/fmu/out/vehicle_state"
     interception_mode_topic_name: "/interception/state"
 
-    px4_record_state_: 14 # 14: OFFBOARD, 0: MANUAL
-    interception_record_state_: "INTERCEPT"
+    px4_record_state: 14 # 14: OFFBOARD, 0: MANUAL
+    interception_record_state: "INTERCEPT"
 
 camera:
   ros__parameters:
