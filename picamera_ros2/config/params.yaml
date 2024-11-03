@@ -3,7 +3,7 @@ recorder:
     use_sim_time: false
     
     image_topic_name: '/camera/image_raw'
-    px4_mode_topic_name: "/fmu/out/vehicle_state"
+    px4_mode_topic_name: "/fmu/out/vehicle_status"
     interception_mode_topic_name: "/interception/state"
 
     px4_record_state: 14 # 14: OFFBOARD, 0: MANUAL

@@ -29,8 +29,11 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
     image_topic_name_, 1, std::bind(&Recorder::image_callback, this, std::placeholders::_1));
 
   // Subscription to the vehicle status topic
+  rclcpp::QoS qos_profile_(rclcpp::KeepLast(1));
+  qos_profile_.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+  qos_profile_.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
   vehicle_status_subscription_ = create_subscription<px4_msgs::msg::VehicleStatus>(
-    px4_mode_topic_name_, 1, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
+    px4_mode_topic_name_, qos_profile_, std::bind(&Recorder::vehicle_status_callback, this, std::placeholders::_1));
 
   // Subscription to the interception mode topic
   interception_mode_subscription_ = create_subscription<std_msgs::msg::String>(
@@ -48,6 +51,10 @@ Recorder::Recorder(const rclcpp::NodeOptions & options)
 
 Recorder::~Recorder()
 {
+  if (initialized_)
+  {
+    this->stop_recording();
+  }
   return;
 }
 
@@ -78,11 +85,18 @@ void Recorder::vehicle_status_callback(const px4_msgs::msg::VehicleStatus::Share
     RCLCPP_INFO(this->get_logger(), "nav_mode changed to: %d", msg->nav_state);
     px4_mode_ = msg->nav_state;
   }
-
 }
 
 void Recorder::image_callback(const sensor_msgs::msg::Image::SharedPtr msg)
 {
+  // print conditions for recording
+  RCLCPP_DEBUG(this->get_logger(), "px4_mode_: %d", px4_mode_);
+  RCLCPP_DEBUG(this->get_logger(), "px4_record_state_: %d", px4_record_state_);
+  RCLCPP_DEBUG(this->get_logger(), "interception_mode_: %s", interception_mode_.c_str());
+  RCLCPP_DEBUG(this->get_logger(), "interception_record_state_: %s", interception_record_state_.c_str());
+  // print initialize
+  RCLCPP_DEBUG(this->get_logger(), "initialized_: %d", initialized_);
+
   if ((px4_mode_ == px4_record_state_) && (interception_mode_ == interception_record_state_))
   {
     if (!initialized_)
