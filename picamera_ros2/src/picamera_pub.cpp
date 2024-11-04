@@ -83,6 +83,9 @@ void PiCameraROS::timerCallback()
 
         cv::cvtColor(cv_image.image, cv_gray_image.image, cv::COLOR_BGR2GRAY);
 
+        // resize to 320x240
+        cv::resize(cv_gray_image.image, cv_gray_image.image, cv::Size(320, 240), 0, 0, cv::INTER_LINEAR);
+
         cv_gray_image.encoding = sensor_msgs::image_encodings::MONO8;
         cv_gray_image.toImageMsg(gray_image_msg);
         gray_image_msg.header.frame_id = "camera";
