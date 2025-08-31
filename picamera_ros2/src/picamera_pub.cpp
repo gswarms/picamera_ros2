@@ -77,6 +77,10 @@ void PiCameraROS::timerCallback()
     image_msg.header.stamp = timestamp;  
     image_pub_->publish(image_msg);
 
+    if (image_count_ > 100000){
+        image_count_ = 0;
+    }        
+
     if (this->publish_grayscale_image_)
     {
         sensor_msgs::msg::Image gray_image_msg;
