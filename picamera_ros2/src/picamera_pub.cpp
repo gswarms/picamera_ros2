@@ -34,6 +34,7 @@ PiCameraROS::PiCameraROS(const rclcpp::NodeOptions &options_): Node("picamera_ro
 
     // get rostimestamp as variable init_camera_time
     // mesuring time to start camera
+    image_count_ = 0;
     this->camera_->options->setExposureMode(Exposure_Modes::EXPOSURE_SHORT);
 
     RCLCPP_INFO(this->get_logger(), "Starting camera with\n width: %d\n height: %d\n framerate: %d\n shutter: %f", this->video_width_, this->video_height_, this->framerate_, this->shutter);
@@ -72,7 +73,7 @@ void PiCameraROS::timerCallback()
 
     cv_image.encoding = sensor_msgs::image_encodings::BGR8;
     cv_image.toImageMsg(image_msg);
-    image_msg.header.frame_id = "camera";
+    image_msg.header.frame_id = std::to_string(image_count_++);
     image_msg.header.stamp = timestamp;  
     image_pub_->publish(image_msg);
 

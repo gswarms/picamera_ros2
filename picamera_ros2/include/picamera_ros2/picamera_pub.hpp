@@ -4,6 +4,7 @@
 #include "lccv.hpp"
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <string>
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
@@ -31,6 +32,7 @@ private:
     bool hdr_;
     float shutter;
     bool publish_grayscale_image_;
+    int image_count_;
 
     rclcpp::Time camera_initilaize_time;
 
